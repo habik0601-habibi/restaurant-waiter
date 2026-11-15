@@ -27,7 +27,7 @@ Open http://localhost:5173. Staff and owner screens ask for a login; guest table
 ## Set up the database (once)
 
 1. In Supabase, enable **Authentication → Sign In / Providers → Allow anonymous sign-ins**. Guests need it.
-2. Run the files in `supabase/migrations/` in order (`0001` to `0004`).
+2. Run the files in `supabase/migrations/` in order (`0001` to `0005`).
 3. Run `supabase/seed/01_restaurant.sql`.
 4. Edit the three passwords in `supabase/seed/02_staff_users.sql`, run it, and put the same values in `.env.local`.
 5. Optional: run `supabase/seed/03_sample_history.sql` for four weeks of generated orders (labelled as sample data in the dashboard).
