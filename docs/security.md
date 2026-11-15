@@ -86,7 +86,7 @@ Each test acts as a browser would, with only the public key.
 7. Bill shares add up exactly to the total.
 8. After payment the same approved phones are refused, and a re-scan is only a pending request.
 
-**Status when this was written:** the 33 tests are written but could not be run, because anonymous sign-ins were switched off in the Supabase project and every test needs guest identities. Run `npm run test:db` after enabling them. Until then the rules have been checked only by reading the SQL and by the staff-side browser run.
+**Status:** all 33 tests pass against the live Supabase project (`npm run test:db`). The same flow was also walked by hand in the browser: scan, staff approval, shared cart, order, kitchen, bill, simulated payment, receipt.
 
 ## Limits and honest caveats
 

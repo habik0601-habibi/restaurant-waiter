@@ -45,15 +45,3 @@ button:disabled {
 .call-pulse {
   animation: pulse-ring 1.2s ease-out infinite;
 }
-
-@keyframes slide-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-.sheet {
-  animation: slide-up 0.22s ease-out;
-}
