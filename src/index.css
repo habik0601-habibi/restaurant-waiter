@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --color-brand-50: #f0f7f1;
+  --color-brand-100: #dcebde;
+  --color-brand-500: #2f7d4a;
+  --color-brand-600: #22663a;
+  --color-brand-700: #1b5230;
+  --color-brand-900: #10321d;
+  --color-saffron-100: #fdf0d5;
+  --color-saffron-400: #f0a92e;
+  --color-saffron-500: #e08e0b;
+  --color-saffron-600: #b96f06;
+  --color-cream: #faf6ef;
+  --color-ink: #1c1917;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(239 68 68 / 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgb(239 68 68 / 0);
+  }
+}
+.call-pulse {
+  animation: pulse-ring 1.2s ease-out infinite;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.sheet {
+  animation: slide-up 0.22s ease-out;
+}
