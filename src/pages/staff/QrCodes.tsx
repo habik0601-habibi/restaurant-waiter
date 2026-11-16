@@ -37,7 +37,7 @@ function QrImage({ url, alt }: { url: string; alt: string }) {
   return <img src={src} alt={alt} width={192} height={192} className="h-48 w-48" />
 }
 
-const LINK = 'inline-flex min-h-9 items-center rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-50'
+const LINK = 'inline-flex min-h-9 items-center rounded-lg border border-stone-300 bg-paper px-3 py-1.5 text-sm font-semibold text-brand-700 hover:border-brand-500 hover:bg-brand-50'
 
 export default function QrCodes() {
   const member = useStaff()
@@ -79,7 +79,7 @@ export default function QrCodes() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 print:hidden">
         <div>
-          <h1 className="text-xl font-bold">Table QR codes</h1>
+          <h1 className="text-3xl font-bold">Table QR codes</h1>
           <p className="text-sm text-stone-600">Print one per table. Guests scan it to order from their phone.</p>
         </div>
         <Button onClick={() => window.print()} disabled={!rows}>

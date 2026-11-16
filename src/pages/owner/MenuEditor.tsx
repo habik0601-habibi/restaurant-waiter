@@ -285,7 +285,7 @@ export default function MenuEditor() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold">Menu</h1>
+          <h1 className="text-3xl font-bold">Menu</h1>
           <p className="text-sm text-stone-500">
             {items.length} dishes, {items.filter((m) => !m.is_available).length} hidden from guests
           </p>

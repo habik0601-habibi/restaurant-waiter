@@ -69,9 +69,9 @@ interface Suggestion {
 }
 
 const QUADRANTS: Record<Quadrant, { label: string; color: string; tone: 'green' | 'amber' | 'blue' | 'stone' }> = {
-  star: { label: 'Stars', color: '#22663a', tone: 'green' },
-  popular_low: { label: 'Popular, low margin', color: '#e08e0b', tone: 'amber' },
-  margin_rare: { label: 'High margin, rarely ordered', color: '#0369a1', tone: 'blue' },
+  star: { label: 'Stars', color: '#1f7a4d', tone: 'green' },
+  popular_low: { label: 'Popular, low margin', color: '#d98e12', tone: 'amber' },
+  margin_rare: { label: 'High margin, rarely ordered', color: '#a93620', tone: 'blue' },
   weak: { label: 'Weak', color: '#78716c', tone: 'stone' },
 }
 const QUADRANT_ORDER: Quadrant[] = ['star', 'popular_low', 'margin_rare', 'weak']
@@ -298,12 +298,12 @@ export default function Dashboard() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold">Menu profit dashboard</h1>
+          <h1 className="text-3xl font-bold">Menu profit dashboard</h1>
           <p className="text-sm text-stone-500">
             Last {periodDays} days{loading ? ' · updating…' : ''}
           </p>
         </div>
-        <div className="flex gap-1 rounded-xl border border-stone-300 bg-white p-1" role="group" aria-label="Period">
+        <div className="flex gap-1 rounded-xl border border-stone-300 bg-paper p-1" role="group" aria-label="Period">
           {PERIODS.map((p) => (
             <button
               key={p}
@@ -524,7 +524,7 @@ function ChartTitle({ title, tag, children }: { title: string; tag: ReactNode; c
   return (
     <div className="mb-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-base font-bold">{title}</h2>
+        <h2 className="text-lg font-bold">{title}</h2>
         {tag}
       </div>
       {children && <p className="text-sm text-stone-500">{children}</p>}

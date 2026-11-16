@@ -18,8 +18,15 @@ export function minutesUntil(iso: string | null | undefined, now = Date.now()): 
   return Math.max(0, Math.ceil((new Date(iso).getTime() - now) / 60000))
 }
 
+/**
+ * Time zone the restaurant runs in. Times shown to guests and staff always use
+ * it, never the device's zone. (One branch today; with several branches this
+ * would come from branches.timezone.)
+ */
+export const RESTAURANT_ZONE = 'Asia/Karachi'
+
 export const timeOfDay = (iso: string) =>
-  new Date(iso).toLocaleTimeString('en-PK', { hour: 'numeric', minute: '2-digit' })
+  new Date(iso).toLocaleTimeString('en-PK', { hour: 'numeric', minute: '2-digit', timeZone: RESTAURANT_ZONE })
 
 const MESSAGES: Record<string, string> = {
   invalid_token: 'This QR code is not valid. Please ask staff for help.',
@@ -34,6 +41,7 @@ const MESSAGES: Record<string, string> = {
   not_allowed: 'You are not allowed to do this.',
   already_paid: 'This has already been paid.',
   no_table_available: 'No table is available for that time and group size.',
+  party_too_large: 'We do not have a table that large. Please call us.',
   slot_must_be_later_today: 'Please pick a time later today.',
   already_reserved: 'You already have a reservation today.',
   not_offered: 'This offer is no longer open.',

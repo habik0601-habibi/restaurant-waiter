@@ -48,9 +48,11 @@ Open http://localhost:5173. Staff and owner screens ask for a login; guest table
 
 | Command | What it covers | Needs |
 |---|---|---|
-| `npm test` | Scheduler (22 tests) and table state machine (10 tests) | nothing |
-| `npm run test:db` | Session security and state rules against the real database (33 tests) | `.env.local`, anonymous sign-ins enabled |
+| `npm test` | Scheduler (23 tests), table state machine (10), reservation time slots (6) | nothing |
+| `npm run test:db` | Session security and state rules (33 tests), waitlist, reservations, equal split, call waiter and session expiry (11 tests) | `.env.local`, anonymous sign-ins enabled |
 | `npm run simulate` | FCFS vs optimised scheduler on generated evenings (about 4 minutes) | nothing |
+
+`npm run test:db` signs in a handful of anonymous guests, and the session-expiry test waits about a minute. Supabase limits anonymous sign-ins (30 per hour per network by default), so avoid running it many times in a row. Raise the limit under Authentication, Rate Limits if you need to.
 
 ## Deploy to Vercel
 

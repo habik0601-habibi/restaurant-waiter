@@ -1,8 +1,9 @@
+import { todaySlots } from '../../lib/slots'
 import { useMemo, useState, type FormEvent } from 'react'
 import { useStaff } from '../../components/StaffShell'
 import { Badge, Button, Card, Notice, Spinner } from '../../components/ui'
 import { useLive, useNow } from '../../hooks/useLive'
-import { friendly, minutesSince, timeOfDay } from '../../lib/format'
+import { friendly, minutesSince, RESTAURANT_ZONE, timeOfDay } from '../../lib/format'
 import { staffDb } from '../../lib/supabase'
 import type { Reservation, TableRow, WaitlistEntry } from '../../lib/types'
 
@@ -14,23 +15,8 @@ interface Data {
   tables: TableLite[]
 }
 
-const INPUT = 'mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm'
+const INPUT = 'mt-1 block min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm'
 const SIZES = Array.from({ length: 12 }, (_, i) => i + 1)
-
-/** 30-minute slots from the next half hour until 23:00 today (local time). */
-function todaySlots(now: number): string[] {
-  const d = new Date(now)
-  d.setSeconds(0, 0)
-  d.setMinutes(d.getMinutes() < 30 ? 30 : 60)
-  const end = new Date(now)
-  end.setHours(23, 0, 0, 0)
-  const out: string[] = []
-  while (d.getTime() <= end.getTime()) {
-    out.push(d.toISOString())
-    d.setMinutes(d.getMinutes() + 30)
-  }
-  return out
-}
 
 const RES_TONE: Record<Reservation['status'], 'blue' | 'green' | 'stone' | 'red'> = {
   booked: 'blue',
@@ -97,7 +83,7 @@ export default function Waitlist() {
 
   const slotMinute = Math.floor(now / 60000)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const slots = useMemo(() => todaySlots(Date.now()), [slotMinute])
+  const slots = useMemo(() => todaySlots(Date.now(), RESTAURANT_ZONE), [slotMinute])
   const chosenSlot = slots.includes(resSlot) ? resSlot : ''
 
   const tableById = useMemo(() => new Map((data?.tables ?? []).map((t) => [t.id, t])), [data])
@@ -168,7 +154,7 @@ export default function Waitlist() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold">Waitlist and reservations</h1>
+        <h1 className="text-3xl font-bold">Waitlist and reservations</h1>
         <p className="mt-1 text-sm text-stone-600">
           Rule: when a table is marked cleared, it is offered to the first waiting group that fits its capacity. A table with a
           reservation in the next hour is held back and not offered.
@@ -215,7 +201,7 @@ export default function Waitlist() {
         {/* ------------------------------------------------------------ queue */}
         <section className="space-y-3">
           <Card className="p-4">
-            <h2 className="font-bold">Queue ({entries.length})</h2>
+            <h2 className="text-xl font-bold">Queue ({entries.length})</h2>
             {entries.length === 0 ? (
               <p className="mt-2 text-sm text-stone-500">Nobody is waiting.</p>
             ) : (
@@ -260,7 +246,7 @@ export default function Waitlist() {
           </Card>
 
           <Card className="p-4">
-            <h2 className="font-bold">Add walk-in</h2>
+            <h2 className="text-xl font-bold">Add walk-in</h2>
             <form onSubmit={addWalkIn} className="mt-2 grid grid-cols-2 gap-3">
               <label className="col-span-2 block text-sm font-medium sm:col-span-1">
                 Name
@@ -292,7 +278,7 @@ export default function Waitlist() {
         {/* ----------------------------------------------------- reservations */}
         <section className="space-y-3">
           <Card className="p-4">
-            <h2 className="font-bold">Reservations today ({reservations.filter((r) => r.status === 'booked').length} booked)</h2>
+            <h2 className="text-xl font-bold">Reservations today ({reservations.filter((r) => r.status === 'booked').length} booked)</h2>
             {reservations.length === 0 ? (
               <p className="mt-2 text-sm text-stone-500">No reservations today.</p>
             ) : (
@@ -357,7 +343,7 @@ export default function Waitlist() {
           </Card>
 
           <Card className="p-4">
-            <h2 className="font-bold">Add reservation</h2>
+            <h2 className="text-xl font-bold">Add reservation</h2>
             <form onSubmit={addReservation} className="mt-2 grid grid-cols-2 gap-3">
               <label className="block text-sm font-medium">
                 Name

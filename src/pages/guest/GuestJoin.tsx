@@ -1,9 +1,10 @@
+import { todaySlots } from '../../lib/slots'
 import { EmberBackdrop } from '../../components/EmberBackdrop'
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Badge, Button, Card, Notice, Spinner } from '../../components/ui'
 import { useLive, useNow } from '../../hooks/useLive'
-import { friendly, timeOfDay } from '../../lib/format'
+import { friendly, RESTAURANT_ZONE, timeOfDay } from '../../lib/format'
 import { BRANCH_ID, ensureGuest, guestDb, withGuestSuffix } from '../../lib/supabase'
 import type { Reservation, WaitlistEntry } from '../../lib/types'
 
@@ -26,21 +27,6 @@ function ordinal(n: number): string {
   if (tens >= 11 && tens <= 13) return `${n}th`
   const unit = n % 10
   return `${n}${unit === 1 ? 'st' : unit === 2 ? 'nd' : unit === 3 ? 'rd' : 'th'}`
-}
-
-/** 30-minute slots from the next half hour until 23:00 today (local time). */
-function todaySlots(now: number): string[] {
-  const d = new Date(now)
-  d.setSeconds(0, 0)
-  d.setMinutes(d.getMinutes() < 30 ? 30 : 60)
-  const end = new Date(now)
-  end.setHours(23, 0, 0, 0)
-  const out: string[] = []
-  while (d.getTime() <= end.getTime()) {
-    out.push(d.toISOString())
-    d.setMinutes(d.getMinutes() + 30)
-  }
-  return out
 }
 
 function readStored(key: string): string | null {
@@ -81,7 +67,7 @@ function MenuLink({ token }: { token: string }) {
   return (
     <Link
       to={withGuestSuffix(`/t/${token}`)}
-      className="flex min-h-14 w-full items-center justify-center rounded-xl bg-saffron-500 px-5 py-3.5 text-center text-base font-bold text-white hover:bg-saffron-600"
+      className="flex min-h-14 w-full items-center justify-center rounded-xl bg-saffron-500 px-5 py-3.5 text-center text-base font-bold text-coal hover:bg-saffron-400"
     >
       Open the menu for my table
     </Link>
@@ -357,7 +343,7 @@ export default function GuestJoin() {
   const now = useNow(30000)
   const slotMinute = Math.floor(now / 60000)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const slots = useMemo(() => todaySlots(Date.now()), [slotMinute])
+  const slots = useMemo(() => todaySlots(Date.now(), RESTAURANT_ZONE), [slotMinute])
   const chosenSlot = slot && slots.includes(slot) ? slot : null
 
   function storeEntry(id: string | null) {
@@ -465,7 +451,7 @@ export default function GuestJoin() {
   }
 
   const tabClass = (active: boolean) =>
-    `min-h-11 flex-1 rounded-xl px-2 py-2 text-sm font-semibold transition-colors ${active ? 'bg-brand-600 text-white' : 'text-stone-600 hover:bg-stone-100'}`
+    `min-h-11 flex-1 rounded-xl px-2 py-2 text-sm font-semibold transition-colors ${active ? 'bg-ink text-white' : 'text-stone-600 hover:bg-stone-100'}`
 
   return (
     <div className="min-h-full bg-cream">
@@ -480,7 +466,7 @@ export default function GuestJoin() {
       </header>
 
       <main className="mx-auto max-w-md space-y-4 p-4 pb-10">
-        <div className="flex gap-1 rounded-2xl border border-stone-200 bg-white p-1" role="tablist">
+        <div className="flex gap-1 rounded-2xl border border-stone-200 bg-paper p-1 shadow-card" role="tablist">
           <button type="button" role="tab" aria-selected={tab === 'queue'} className={tabClass(tab === 'queue')} onClick={() => switchTab('queue')}>
             Join the queue
           </button>
