@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import { Icon } from '../../components/Icon'
 import { Badge } from '../../components/ui'
 import { useLive } from '../../hooks/useLive'
 import { rs, SPICE } from '../../lib/format'
@@ -78,8 +79,10 @@ export function priceOf(menu: MenuData, item: MenuItem, size: MenuItemSize | nul
 export function Chillies({ level }: { level: number }) {
   if (level <= 0) return null
   return (
-    <span className="text-xs text-red-600" title={SPICE[level]} aria-label={`Spice level: ${SPICE[level]}`}>
-      {'🌶'.repeat(level)}
+    <span className="inline-flex text-brand-500" title={SPICE[level]} role="img" aria-label={`Spice level: ${SPICE[level]}`}>
+      {Array.from({ length: level }, (_, i) => (
+        <Icon key={i} name="flame" className="-ml-0.5 h-3.5 w-3.5 first:ml-0" filled />
+      ))}
     </span>
   )
 }
@@ -98,7 +101,7 @@ export function MenuBrowser({ menu, onPick }: { menu: MenuData; onPick?: (item: 
 
   return (
     <div>
-      <div className="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-cream px-4 py-2">
+      <div className="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-cream/95 px-4 py-2.5 backdrop-blur [scrollbar-width:none]">
         {grouped.map(({ category }) => (
           <button
             key={category.id}
@@ -106,8 +109,8 @@ export function MenuBrowser({ menu, onPick }: { menu: MenuData; onPick?: (item: 
               setActive(category.id)
               sections.current[category.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
             }}
-            className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium ${
-              active === category.id ? 'bg-brand-600 text-white' : 'bg-white text-stone-700 ring-1 ring-stone-200'
+            className={`min-h-10 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold ${
+              active === category.id ? 'bg-ink text-white' : 'bg-paper text-stone-700 ring-1 ring-stone-200 hover:ring-stone-400'
             }`}
           >
             {category.name}
@@ -123,7 +126,10 @@ export function MenuBrowser({ menu, onPick }: { menu: MenuData; onPick?: (item: 
           }}
           className="scroll-mt-14 pt-3"
         >
-          <h3 className="mb-2 text-base font-bold">{category.name}</h3>
+          <h3 className="font-display mb-2.5 flex items-center gap-3 text-xl font-bold">
+            {category.name}
+            <span className="h-px flex-1 bg-stone-200" />
+          </h3>
           <div className="space-y-2">
             {items.map((item) => {
               const sizes = menu.sizes.filter((s) => s.menu_item_id === item.id)
@@ -133,9 +139,9 @@ export function MenuBrowser({ menu, onPick }: { menu: MenuData; onPick?: (item: 
                   key={item.id}
                   disabled={!onPick || !item.is_available}
                   onClick={() => onPick?.(item)}
-                  className={`block w-full rounded-2xl bg-white p-3.5 text-left shadow-sm ring-1 ring-stone-100 ${
-                    item.is_available ? '' : 'opacity-50'
-                  } ${onPick && item.is_available ? 'active:bg-stone-50' : 'cursor-default'}`}
+                  className={`block w-full rounded-2xl border border-stone-200/80 bg-paper p-4 text-left shadow-card ${
+                    item.is_available ? '' : 'opacity-55'
+                  } ${onPick && item.is_available ? 'hover:border-brand-200 active:bg-brand-50' : 'cursor-default'}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -143,7 +149,7 @@ export function MenuBrowser({ menu, onPick }: { menu: MenuData; onPick?: (item: 
                         <span className="font-semibold">{item.name}</span>
                         <Chillies level={item.spice_level} />
                       </div>
-                      <p className="mt-0.5 text-sm text-stone-600">{item.description}</p>
+                      <p className="mt-0.5 text-sm leading-snug text-stone-600">{item.description}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         {!item.is_available && <Badge tone="red">Sold out</Badge>}
                         {deal && <Badge tone="amber">{deal.title} · {deal.percent_off}% off</Badge>}
@@ -160,7 +166,9 @@ export function MenuBrowser({ menu, onPick }: { menu: MenuData; onPick?: (item: 
                       </div>
                       {deal && <div className="text-xs text-stone-400 line-through">{rs(full)}</div>}
                       {onPick && item.is_available && (
-                        <span className="mt-2 inline-block rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">+ Add</span>
+                        <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white">
+                          <Icon name="plus" className="h-4 w-4" /> Add
+                        </span>
                       )}
                     </div>
                   </div>

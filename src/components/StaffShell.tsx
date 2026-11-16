@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type FormEvent, type Re
 import { NavLink } from 'react-router-dom'
 import { staffDb } from '../lib/supabase'
 import { friendly } from '../lib/format'
+import { EmberBackdrop } from './EmberBackdrop'
 import { Button, Notice, Spinner } from './ui'
 
 export interface StaffMember {
@@ -72,11 +73,13 @@ export function StaffShell({ children, managerOnly = false, wide = false }: { ch
 
   if (member === null) {
     return (
-      <div className="flex min-h-full items-center justify-center bg-stone-100 p-4">
-        <form onSubmit={signIn} className="w-full max-w-sm space-y-4 rounded-2xl border border-stone-200 bg-white p-6">
+      <div className="relative isolate flex min-h-full items-center justify-center overflow-hidden bg-brand-900 p-4">
+        <EmberBackdrop />
+        <form onSubmit={signIn} className="relative w-full max-w-sm space-y-4 rounded-3xl bg-paper p-7 shadow-float">
           <div>
-            <h1 className="text-xl font-bold">Staff login</h1>
-            <p className="text-sm text-stone-500">Zaiqa Karahi House</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand-600">Zaiqa Karahi House</p>
+            <h1 className="mt-1 text-3xl font-bold">Staff login</h1>
+            <p className="mt-1 text-sm text-stone-600">Floor, kitchen and owner screens.</p>
           </div>
           {error && <Notice>{error}</Notice>}
           <label className="block text-sm font-medium">
@@ -87,7 +90,7 @@ export function StaffShell({ children, managerOnly = false, wide = false }: { ch
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+              className="mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5"
             />
           </label>
           <label className="block text-sm font-medium">
@@ -98,10 +101,10 @@ export function StaffShell({ children, managerOnly = false, wide = false }: { ch
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+              className="mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5"
             />
           </label>
-          <Button type="submit" disabled={busy} className="w-full">
+          <Button type="submit" size="lg" disabled={busy} className="w-full">
             {busy ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
@@ -113,10 +116,10 @@ export function StaffShell({ children, managerOnly = false, wide = false }: { ch
 
   return (
     <StaffContext.Provider value={member}>
-      <div className="flex min-h-full flex-col bg-stone-100">
-        <header className="sticky top-0 z-30 border-b border-stone-200 bg-white print:hidden">
+      <div className="flex min-h-full flex-col bg-[#f4efe7]">
+        <header className="sticky top-0 z-30 border-b border-stone-200 bg-paper/95 backdrop-blur print:hidden">
           <div className={`mx-auto flex items-center gap-2 px-3 py-2 ${wide ? 'max-w-[1500px]' : 'max-w-6xl'}`}>
-            <span className="mr-2 hidden text-sm font-bold text-brand-700 sm:block">Zaiqa</span>
+            <span className="font-display mr-3 hidden text-lg font-bold text-brand-700 sm:block">Zaiqa</span>
             <nav className="flex flex-1 gap-1 overflow-x-auto">
               {NAV.filter((n) => !n.roles || n.roles.includes(member.role)).map((n) => (
                 <NavLink
@@ -124,7 +127,7 @@ export function StaffShell({ children, managerOnly = false, wide = false }: { ch
                   to={n.to}
                   end
                   className={({ isActive }) =>
-                    `whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ${isActive ? 'bg-brand-600 text-white' : 'text-stone-600 hover:bg-stone-100'}`
+                    `whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-semibold ${isActive ? 'bg-ink text-white' : 'text-stone-600 hover:bg-stone-100 hover:text-ink'}`
                   }
                 >
                   {n.label}

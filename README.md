@@ -75,6 +75,14 @@ tests/                    database security tests
 docs/                     architecture, scheduler, security
 ```
 
+## Design
+
+- **Identity:** "ember". Charcoal, chili red and saffron gold on warm paper, because a karahi is cooked over live fire. Defined once in `src/index.css`.
+- **Type:** Playfair Display for headings (the feel of a printed menu), Karla for everything functional.
+- **Icons:** one inline SVG set in `src/components/Icon.tsx`. No emoji are used as interface icons.
+- **Shader:** hero areas have a slow animated gradient built with the `shaders` library (WebGPU), in `src/components/EmberShader.tsx`. It is decoration only: a static gradient in the same colours is always underneath, and the shader is skipped without WebGPU, with reduced-motion, on data-saver or slow connections. Its telemetry is switched off.
+- **Accessibility:** visible keyboard focus, 44px touch targets on the guest app, reduced-motion respected, status never shown by colour alone.
+
 ## Not real
 
 - Payments are simulated. No provider is contacted.

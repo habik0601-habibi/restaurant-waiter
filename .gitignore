@@ -7,3 +7,5 @@ demo-vids
 .vercel
 *.log
 .claude
+.agents
+skills-lock.json

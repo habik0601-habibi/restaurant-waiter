@@ -1,3 +1,4 @@
+import { EmberBackdrop } from '../../components/EmberBackdrop'
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Badge, Button, Card, Notice, Spinner } from '../../components/ui'
@@ -468,11 +469,13 @@ export default function GuestJoin() {
 
   return (
     <div className="min-h-full bg-cream">
-      <header className="bg-brand-900 px-4 py-5 text-white">
-        <div className="mx-auto max-w-md">
-          <p className="text-xs uppercase tracking-widest text-saffron-400">Welcome to</p>
-          <h1 className="text-2xl font-bold">Zaiqa Karahi House</h1>
-          <p className="mt-1 text-sm text-brand-100">No table yet? Join the queue or reserve for later today.</p>
+      <header className="relative isolate overflow-hidden bg-brand-900 px-5 pb-8 pt-8 text-white">
+        <EmberBackdrop />
+        <div className="relative mx-auto max-w-md">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-saffron-400">Welcome to</p>
+          <h1 className="mt-1 text-[1.75rem] font-bold leading-tight">Zaiqa Karahi House</h1>
+          <div className="ember-rule mt-2.5" />
+          <p className="mt-3 text-sm text-white/85">No table yet? Join the queue or reserve for later today.</p>
         </div>
       </header>
 

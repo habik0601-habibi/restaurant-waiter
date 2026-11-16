@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Button, Notice, Simulated, Spinner } from '../../components/ui'
+import { EmberBackdrop } from '../../components/EmberBackdrop'
+import { Icon } from '../../components/Icon'
+import { Button, Hero, Notice, Simulated, Spinner } from '../../components/ui'
 import { useLive } from '../../hooks/useLive'
 import { friendly, rs } from '../../lib/format'
 import { guestDb } from '../../lib/supabase'
@@ -44,14 +46,12 @@ export default function GuestReceipt({ view, sessionId, onDone }: { view: TableV
   const bill = data?.bill
   return (
     <div className="mx-auto min-h-full max-w-md bg-cream">
-      <header className="bg-brand-900 px-5 pb-6 pt-8 text-white">
-        <p className="text-xs uppercase tracking-widest text-saffron-400">Table {view.label}</p>
-        <h1 className="text-2xl font-bold">Thank you for visiting</h1>
-        <p className="text-sm text-brand-100">{view.restaurant_name}</p>
-      </header>
+      <Hero eyebrow={`Table ${view.label}`} title="Thank you for visiting" backdrop={<EmberBackdrop />}>
+        <p className="mt-2 text-sm text-white/80">{view.restaurant_name}</p>
+      </Hero>
       <div className="-mt-3 space-y-4 rounded-t-3xl bg-cream p-4">
         {bill ? (
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-stone-200/80 bg-paper p-4 shadow-card">
             <div className="mb-2 flex items-center justify-between">
               <h2 className="font-bold">Receipt</h2>
               <Simulated>Simulated payment</Simulated>
@@ -82,16 +82,18 @@ export default function GuestReceipt({ view, sessionId, onDone }: { view: TableV
           <Notice tone="amber">This visit has ended. Staff closed the table.</Notice>
         )}
 
-        <div className="rounded-2xl bg-white p-4 text-center shadow-sm">
+        <div className="rounded-2xl border border-stone-200/80 bg-paper p-5 text-center shadow-card">
           {sent ? (
-            <p className="py-3 font-semibold text-brand-700">Thank you for your rating 🙏</p>
+            <p className="flex items-center justify-center gap-2 py-3 font-semibold text-brand-700">
+              <Icon name="check" /> Thank you for your rating
+            </p>
           ) : (
             <>
               <h2 className="font-bold">How was your visit?</h2>
               <div className="my-3 flex justify-center gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <button key={n} onClick={() => setStars(n)} aria-label={`${n} star${n > 1 ? 's' : ''}`} className={`h-12 w-12 text-3xl ${n <= stars ? 'text-saffron-500' : 'text-stone-300'}`}>
-                    ★
+                  <button key={n} onClick={() => setStars(n)} aria-label={`${n} star${n > 1 ? 's' : ''}`} className={`flex h-12 w-12 items-center justify-center ${n <= stars ? 'text-saffron-500' : 'text-stone-300 hover:text-saffron-400'}`}>
+                    <Icon name="star" className="h-9 w-9" filled />
                   </button>
                 ))}
               </div>

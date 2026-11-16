@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { EmberBackdrop } from '../../components/EmberBackdrop'
+import { Icon, type IconName } from '../../components/Icon'
 import { Badge, Button, Notice, Sheet, Simulated } from '../../components/ui'
 import { useLive, useNow } from '../../hooks/useLive'
 import { friendly, minutesUntil, rs } from '../../lib/format'
@@ -20,12 +22,12 @@ interface SessionData {
 
 const EMPTY: SessionData = { guests: [], cart: [], orders: [], items: [], calls: [], bill: null, shares: [] }
 
-const CALL_REASONS: { reason: CallReason; label: string; icon: string }[] = [
-  { reason: 'help', label: 'Assistance', icon: '🙋' },
-  { reason: 'water', label: 'Water', icon: '💧' },
-  { reason: 'cutlery', label: 'Cutlery', icon: '🍴' },
-  { reason: 'clean', label: 'Clean table', icon: '🧽' },
-  { reason: 'bill', label: 'Bring the bill', icon: '🧾' },
+const CALL_REASONS: { reason: CallReason; label: string; icon: IconName }[] = [
+  { reason: 'help', label: 'Assistance', icon: 'help' },
+  { reason: 'water', label: 'Water', icon: 'droplet' },
+  { reason: 'cutlery', label: 'Cutlery', icon: 'utensils' },
+  { reason: 'clean', label: 'Clean table', icon: 'sparkles' },
+  { reason: 'bill', label: 'Bring the bill', icon: 'receipt' },
 ]
 
 export const PAY_METHODS: { id: string; label: string }[] = [
@@ -131,13 +133,15 @@ export default function GuestSession({ view, sessionId, guestId, menu }: { view:
 
   return (
     <div className="mx-auto flex min-h-full max-w-md flex-col bg-cream">
-      <header className="bg-brand-900 px-4 pb-4 pt-5 text-white">
-        <div className="flex items-end justify-between">
+      <header className="relative isolate overflow-hidden bg-brand-900 px-4 pb-5 pt-5 text-white">
+        <EmberBackdrop />
+        <div className="relative flex items-end justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-widest text-saffron-400">Table {view.label}</p>
-            <h1 className="text-xl font-bold">{view.restaurant_name}</h1>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-saffron-400">Table {view.label}</p>
+            <h1 className="text-2xl font-bold leading-tight">{view.restaurant_name}</h1>
           </div>
-          <p className="text-right text-xs text-brand-100">
+          <p className="flex items-center gap-1.5 text-right text-xs text-white/85">
+            <Icon name="users" className="h-4 w-4" />
             {data.guests.filter((g) => g.status === 'approved').map((g) => (g.id === guestId ? 'You' : g.display_name)).join(', ')}
           </p>
         </div>
@@ -170,12 +174,12 @@ export default function GuestSession({ view, sessionId, guestId, menu }: { view:
 
         {tab === 'cart' && (
           <section>
-            <h2 className="mb-1 text-lg font-bold">Shared cart</h2>
+            <h2 className="mb-1 text-2xl font-bold">Shared cart</h2>
             <p className="mb-3 text-sm text-stone-600">Everyone at the table sees this cart update live.</p>
-            {cartLines.length === 0 && <p className="rounded-2xl bg-white p-6 text-center text-sm text-stone-500">Nothing in the cart yet.</p>}
+            {cartLines.length === 0 && <p className="rounded-2xl border border-dashed border-stone-300 bg-paper/60 p-8 text-center text-sm text-stone-600">Nothing in the cart yet.</p>}
             <div className="space-y-2">
               {cartLines.map((c) => (
-                <div key={c.id} className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-stone-100">
+                <div key={c.id} className="rounded-2xl border border-stone-200/80 bg-paper p-3.5 shadow-card">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="font-semibold">{c.item?.name ?? 'Dish'}</div>
@@ -219,7 +223,7 @@ export default function GuestSession({ view, sessionId, guestId, menu }: { view:
               ))}
             </div>
             {cartLines.length > 0 && (
-              <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
+              <div className="mt-4 rounded-2xl border border-stone-200/80 bg-paper p-4 shadow-card">
                 <div className="flex justify-between text-base font-bold">
                   <span>Cart total</span>
                   <span>{rs(cartTotal)}</span>
@@ -235,15 +239,15 @@ export default function GuestSession({ view, sessionId, guestId, menu }: { view:
 
         {tab === 'orders' && (
           <section>
-            <h2 className="mb-3 text-lg font-bold">Your orders</h2>
-            {data.orders.length === 0 && <p className="rounded-2xl bg-white p-6 text-center text-sm text-stone-500">No orders yet. Add dishes from the menu.</p>}
+            <h2 className="mb-3 text-2xl font-bold">Your orders</h2>
+            {data.orders.length === 0 && <p className="rounded-2xl border border-dashed border-stone-300 bg-paper/60 p-8 text-center text-sm text-stone-600">No orders yet. Add dishes from the menu.</p>}
             <div className="space-y-3">
               {data.orders.slice().reverse().map((o) => {
                 const items = data.items.filter((i) => i.order_id === o.id)
                 const done = items.filter((i) => i.status === 'ready' || i.status === 'served').length
                 const eta = minutesUntil(o.estimated_ready_at, now)
                 return (
-                  <div key={o.id} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-100">
+                  <div key={o.id} className="rounded-2xl border border-stone-200/80 bg-paper p-4 shadow-card">
                     <div className="flex items-center justify-between">
                       <span className="font-bold">Order #{o.order_no}</span>
                       {o.status === 'served' ? <Badge tone="green">Served</Badge> : <Badge tone="amber">In the kitchen</Badge>}
@@ -285,35 +289,41 @@ export default function GuestSession({ view, sessionId, guestId, menu }: { view:
       {/* call waiter */}
       <button
         onClick={() => setCallOpen(true)}
-        className="fixed bottom-24 right-4 z-20 flex h-14 items-center gap-2 rounded-full bg-saffron-500 px-5 font-semibold text-white shadow-lg"
+        className="fixed bottom-24 right-4 z-20 flex h-14 items-center gap-2 rounded-full bg-saffron-500 px-5 font-bold text-coal shadow-float hover:bg-saffron-400"
         style={{ right: 'max(1rem, calc(50vw - 13rem))' }}
       >
-        🔔 Call waiter
-        {data.calls.some((c) => c.status === 'open') && <span className="h-2.5 w-2.5 rounded-full bg-white" />}
+        <Icon name="bell" /> Call waiter
+        {data.calls.some((c) => c.status === 'open') && <span className="h-2.5 w-2.5 rounded-full bg-brand-600" />}
       </button>
 
       {/* cart bar */}
       {tab === 'menu' && cartCount > 0 && (
         <button
           onClick={() => setTab('cart')}
-          className="fixed inset-x-0 bottom-16 z-20 mx-auto flex w-[calc(100%-2rem)] max-w-[26rem] items-center justify-between rounded-2xl bg-brand-600 px-4 py-3 font-semibold text-white shadow-lg"
+          className="fixed inset-x-0 bottom-[4.5rem] z-20 mx-auto flex w-[calc(100%-2rem)] max-w-[26rem] items-center justify-between rounded-2xl bg-ink px-4 py-3.5 font-semibold text-white shadow-float hover:bg-coal"
         >
           <span>{cartCount} in the shared cart</span>
           <span>View cart · {rs(cartTotal)}</span>
         </button>
       )}
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid max-w-md grid-cols-4 border-t border-stone-200 bg-white pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid max-w-md grid-cols-4 border-t border-stone-200 bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         {(
           [
-            ['menu', 'Menu', '📖', 0],
-            ['cart', 'Cart', '🛒', cartCount],
-            ['orders', 'Orders', '🍽', openOrders.length],
-            ['bill', 'Bill', '🧾', 0],
-          ] as [Tab, string, string, number][]
+            ['menu', 'Menu', 'menu', 0],
+            ['cart', 'Cart', 'cart', cartCount],
+            ['orders', 'Orders', 'utensils', openOrders.length],
+            ['bill', 'Bill', 'receipt', 0],
+          ] as [Tab, string, IconName, number][]
         ).map(([id, label, icon, count]) => (
-          <button key={id} onClick={() => setTab(id)} className={`relative flex flex-col items-center py-2.5 text-xs font-medium ${tab === id ? 'text-brand-700' : 'text-stone-500'}`}>
-            <span className="text-xl leading-6">{icon}</span>
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            aria-current={tab === id ? 'page' : undefined}
+            className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 py-2 text-xs font-semibold ${tab === id ? 'text-brand-600' : 'text-stone-500 hover:text-ink'}`}
+          >
+            {tab === id && <span className="absolute inset-x-6 top-0 h-0.5 rounded-full bg-brand-600" />}
+            <Icon name={icon} className="h-6 w-6" />
             {label}
             {count > 0 && (
               <span className="absolute right-[26%] top-1 min-w-5 rounded-full bg-saffron-500 px-1.5 text-center text-[11px] font-bold text-white">{count}</span>
@@ -349,9 +359,13 @@ export default function GuestSession({ view, sessionId, guestId, menu }: { view:
                   open ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-stone-200 bg-white'
                 }`}
               >
-                <span className="text-2xl">{r.icon}</span>
+                <Icon name={r.icon} className="mb-1 h-7 w-7" />
                 {r.label}
-                {open && <span className="text-xs font-normal">Waiter notified ✓</span>}
+                {open && (
+                  <span className="flex items-center gap-1 text-xs font-normal">
+                    <Icon name="check" className="h-3.5 w-3.5" /> Waiter notified
+                  </span>
+                )}
               </button>
             )
           })}
@@ -368,13 +382,15 @@ function WaitBanner({ orders, now }: { orders: Order[]; now: number }) {
   const etas = orders.map((o) => minutesUntil(o.estimated_ready_at, now)).filter((e): e is number => e !== null)
   const eta = etas.length ? Math.max(...etas) : null
   return (
-    <div className="mt-3 flex items-center gap-3 rounded-2xl bg-white/10 px-3 py-2">
-      <span className="text-2xl">⏱</span>
+    <div className="relative mt-4 flex items-center gap-3 rounded-2xl border border-white/15 bg-black/25 px-3.5 py-2.5 backdrop-blur-sm">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-saffron-500 text-coal">
+        <Icon name="clock" />
+      </span>
       <div>
         <p className="text-sm font-semibold">
           {eta === null ? 'Your order is with the kitchen' : eta <= 1 ? 'Your food is almost ready' : `Your food should be ready in about ${eta} min`}
         </p>
-        <p className="text-xs text-brand-100">Live estimate from the kitchen schedule. Dishes are timed to arrive together.</p>
+        <p className="text-xs text-white/75">Live estimate from the kitchen schedule. Dishes are timed to arrive together.</p>
       </div>
     </div>
   )
@@ -414,7 +430,11 @@ function AddSheet({
     <Sheet open onClose={onClose} title={item.name}>
       <p className="text-sm text-stone-600">{item.description}</p>
       <div className="mt-2 flex flex-wrap gap-1.5">
-        {item.spice_level > 0 && <Badge tone="red">{'🌶'.repeat(item.spice_level)} spice</Badge>}
+        {item.spice_level > 0 && (
+          <Badge tone="red">
+            <Icon name="flame" className="h-3.5 w-3.5" filled /> {['', 'Mild', 'Medium', 'Hot'][item.spice_level]}
+          </Badge>
+        )}
         {item.allergens.map((a) => (
           <Badge key={a} tone="blue">contains {a}</Badge>
         ))}
@@ -517,11 +537,11 @@ function BillTab({
 
   return (
     <section>
-      <h2 className="mb-3 text-lg font-bold">Bill</h2>
+      <h2 className="mb-3 text-2xl font-bold">Bill</h2>
       {items.length === 0 ? (
-        <p className="rounded-2xl bg-white p-6 text-center text-sm text-stone-500">Nothing ordered yet.</p>
+        <p className="rounded-2xl border border-dashed border-stone-300 bg-paper/60 p-8 text-center text-sm text-stone-600">Nothing ordered yet.</p>
       ) : (
-        <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-100">
+        <div className="rounded-2xl border border-stone-200/80 bg-paper p-4 shadow-card">
           <ul className="space-y-1.5 text-sm">
             {lines.map((l, i) => (
               <li key={i} className="flex justify-between gap-2">
@@ -555,7 +575,7 @@ function BillTab({
 
       {bill && bill.status === 'open' && (
         <>
-          <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-100">
+          <div className="mt-4 rounded-2xl border border-stone-200/80 bg-paper p-4 shadow-card">
             <p className="mb-2 text-sm font-semibold">Split</p>
             <div className="grid grid-cols-3 gap-2">
               {(
@@ -570,7 +590,7 @@ function BillTab({
                   disabled={busy || anyPaid}
                   onClick={() => setSplit(mode, tipPercent)}
                   className={`min-h-11 rounded-xl border px-2 py-2 text-sm font-medium ${
-                    bill.split_mode === mode ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-stone-200'
+                    bill.split_mode === mode ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-stone-200 bg-paper hover:border-stone-400'
                   } ${anyPaid ? 'opacity-50' : ''}`}
                 >
                   {label}
@@ -585,7 +605,7 @@ function BillTab({
                   disabled={busy || anyPaid}
                   onClick={() => setSplit(bill.split_mode, t)}
                   className={`min-h-11 rounded-xl border py-2 text-sm font-medium ${
-                    tipPercent === t ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-stone-200'
+                    tipPercent === t ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-stone-200 bg-paper hover:border-stone-400'
                   } ${anyPaid ? 'opacity-50' : ''}`}
                 >
                   {t === 0 ? 'No tip' : `${t}%`}
@@ -597,7 +617,7 @@ function BillTab({
 
           <div className="mt-4 space-y-2">
             {data.shares.map((s) => (
-              <div key={s.id} className="flex items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-100">
+              <div key={s.id} className="flex items-center justify-between gap-3 rounded-2xl border border-stone-200/80 bg-paper p-4 shadow-card">
                 <div>
                   <div className="font-semibold">{s.guest_id === guestId && bill.split_mode !== 'whole' ? 'Your share' : s.label}</div>
                   <div className="text-sm text-stone-600">

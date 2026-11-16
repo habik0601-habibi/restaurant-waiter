@@ -1,19 +1,39 @@
 @import 'tailwindcss';
 
+/*
+ * Visual identity: "ember".
+ * A karahi is cooked over live fire, so the palette is charcoal, chili red and
+ * saffron gold on warm paper. Headings use a high-contrast serif (the feel of
+ * a printed menu); everything functional uses a plain, legible sans.
+ * The class names brand-* and saffron-* are used throughout the app, so the
+ * whole product is re-themed from this one block.
+ */
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  --color-brand-50: #f0f7f1;
-  --color-brand-100: #dcebde;
-  --color-brand-500: #2f7d4a;
-  --color-brand-600: #22663a;
-  --color-brand-700: #1b5230;
-  --color-brand-900: #10321d;
-  --color-saffron-100: #fdf0d5;
-  --color-saffron-400: #f0a92e;
-  --color-saffron-500: #e08e0b;
-  --color-saffron-600: #b96f06;
-  --color-cream: #faf6ef;
-  --color-ink: #1c1917;
+  --font-sans: 'Karla', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Playfair Display', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* chili / terracotta: primary actions */
+  --color-brand-50: #fdf4f1;
+  --color-brand-100: #fbe4dc;
+  --color-brand-200: #f6c7b8;
+  --color-brand-500: #c5482f;
+  --color-brand-600: #a93620;
+  --color-brand-700: #8a2a18;
+  --color-brand-900: #2b1009;
+
+  /* saffron: accents, calls to attention */
+  --color-saffron-100: #fdf1d6;
+  --color-saffron-400: #f0b23e;
+  --color-saffron-500: #d98e12;
+  --color-saffron-600: #a96a08;
+
+  --color-cream: #fbf6ee;
+  --color-paper: #fffdf9;
+  --color-ink: #231a15;
+  --color-coal: #17100c;
+
+  --shadow-card: 0 1px 2px rgb(43 16 9 / 0.06), 0 6px 20px -8px rgb(43 16 9 / 0.12);
+  --shadow-float: 0 10px 30px -8px rgb(43 16 9 / 0.35);
 }
 
 html,
@@ -25,23 +45,108 @@ body {
   margin: 0;
   background: var(--color-cream);
   color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
-button {
+
+/* in the base layer so utilities such as font-sans can still override it */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+button,
+a,
+[role='button'],
+[role='tab'],
+[role='switch'],
+select,
+summary {
   cursor: pointer;
 }
 button:disabled {
   cursor: not-allowed;
 }
+button,
+a {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+/* keyboard focus is always visible */
+:focus-visible {
+  outline: 2px solid var(--color-saffron-500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+input,
+select,
+textarea {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px rgb(197 72 47 / 0.18);
+}
+
+/* static fallback for the shader backdrop (no WebGPU, or reduced motion) */
+.ember-fallback {
+  background:
+    radial-gradient(120% 90% at 85% -10%, rgb(217 142 18 / 0.55) 0%, transparent 55%),
+    radial-gradient(90% 80% at -10% 110%, rgb(197 72 47 / 0.6) 0%, transparent 60%), var(--color-brand-900);
+}
+
+/* thin saffron rule used under hero titles */
+.ember-rule {
+  height: 2px;
+  width: 44px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-saffron-400), transparent);
+}
 
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 rgb(239 68 68 / 0.6);
+    box-shadow: 0 0 0 0 rgb(220 38 38 / 0.6);
   }
   100% {
-    box-shadow: 0 0 0 14px rgb(239 68 68 / 0);
+    box-shadow: 0 0 0 14px rgb(220 38 38 / 0);
   }
 }
 .call-pulse {
   animation: pulse-ring 1.2s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+  }
 }

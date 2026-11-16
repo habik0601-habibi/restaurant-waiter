@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useStaff } from '../../components/StaffShell'
+import { Icon, type IconName } from '../../components/Icon'
 import { Badge, Button, Notice, Sheet, Spinner } from '../../components/ui'
 import { useLive, useNow } from '../../hooks/useLive'
 import { friendly, minutesSince, rs } from '../../lib/format'
@@ -27,7 +28,8 @@ const STATE_STYLE: Record<TableState, string> = {
   paid_dirty: 'bg-stone-200 border-stone-500 text-stone-800',
 }
 
-const REASON: Record<CallReason, string> = { help: '🙋 Assistance', water: '💧 Water', bill: '🧾 Bill', cutlery: '🍴 Cutlery', clean: '🧽 Clean table' }
+const REASON: Record<CallReason, string> = { help: 'Assistance', water: 'Water', bill: 'Bill', cutlery: 'Cutlery', clean: 'Clean table' }
+const REASON_ICON: Record<CallReason, IconName> = { help: 'help', water: 'droplet', bill: 'receipt', cutlery: 'utensils', clean: 'sparkles' }
 
 /**
  * Live floor map. Every table is drawn in the colour of its state; a table
@@ -117,7 +119,7 @@ export default function Floor() {
     <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
       <section>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <h1 className="text-xl font-bold">Floor</h1>
+          <h1 className="text-2xl font-bold">Floor</h1>
           <div className="flex flex-wrap items-center gap-1.5">
             {counts.map(([s, n]) => (
               <span key={s} className={`rounded-full border px-2 py-0.5 text-xs font-medium ${STATE_STYLE[s]}`}>
@@ -125,15 +127,18 @@ export default function Floor() {
               </span>
             ))}
             {(staff.role === 'owner' || staff.role === 'manager') && (
-              <button onClick={() => setLimitsOpen(true)} className="rounded-full border border-stone-300 bg-white px-2 py-0.5 text-xs">
-                ⏱ Time limits
+              <button onClick={() => setLimitsOpen(true)} className="inline-flex items-center gap-1 rounded-full border border-stone-300 bg-paper px-2.5 py-0.5 text-xs font-medium hover:border-stone-500">
+                <Icon name="clock" className="h-3.5 w-3.5" /> Time limits
               </button>
             )}
           </div>
         </div>
         {error && <div className="mb-2"><Notice>{error}</Notice></div>}
 
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-stone-300 bg-white sm:aspect-[16/10]">
+        <div
+          className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-stone-300 bg-paper shadow-card sm:aspect-[16/10]"
+          style={{ backgroundImage: 'radial-gradient(rgb(120 113 108 / 0.18) 1px, transparent 1px)', backgroundSize: '22px 22px' }}
+        >
           <div className="absolute inset-x-0 top-0 h-2 bg-stone-200" title="Window wall" />
           <div className="absolute bottom-2 right-3 rounded bg-stone-100 px-2 py-1 text-[10px] uppercase tracking-wide text-stone-500">Kitchen →</div>
           <div className="absolute bottom-2 left-3 rounded bg-stone-100 px-2 py-1 text-[10px] uppercase tracking-wide text-stone-500">← Entrance</div>
@@ -158,7 +163,11 @@ export default function Floor() {
                 <span className="text-sm font-bold sm:text-base">{t.label}</span>
                 <span className="hidden text-[10px] sm:block">{STATE_LABEL[t.state]}</span>
                 <span className="text-[10px] tabular-nums opacity-80">{t.state === 'free' ? `${t.capacity} seats` : `${minutesSince(t.state_since, now)} min`}</span>
-                {calls.length > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-red-600 px-1.5 text-xs text-white">🔔</span>}
+                {calls.length > 0 && (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white shadow">
+                    <Icon name={REASON_ICON[calls[0].reason]} className="h-3.5 w-3.5" />
+                  </span>
+                )}
                 {s?.status === 'pending' && <span className="absolute -left-1 -top-1 rounded-full bg-sky-600 px-1.5 text-[10px] font-bold text-white">SCAN</span>}
                 {late && <span className="absolute -bottom-1 -right-1 rounded-full bg-orange-500 px-1.5 text-xs font-bold text-white">!</span>}
               </button>
@@ -166,14 +175,15 @@ export default function Floor() {
           })}
         </div>
         <p className="mt-2 text-xs text-stone-500">
-          🔔 guest is calling · SCAN a phone asked to order · <span className="font-bold text-orange-600">!</span> in this state longer than its limit
+          <Icon name="bell" className="h-3.5 w-3.5 text-red-600" /> guest is calling · SCAN a phone asked to order ·{' '}
+          <span className="font-bold text-orange-600">!</span> in this state longer than its limit
         </p>
       </section>
 
       <aside className="space-y-3">
         <Panel title="Waiter calls" count={data.calls.length} empty="No one is calling.">
           {data.calls.map((c) => (
-            <Row key={c.id} title={`Table ${label(c.table_id)} · ${REASON[c.reason]}`} sub={`${minutesSince(c.created_at, now)} min ago`} tone="red">
+            <Row key={c.id} icon={REASON_ICON[c.reason]} title={`Table ${label(c.table_id)} · ${REASON[c.reason]}`} sub={`${minutesSince(c.created_at, now)} min ago`} tone="red">
               <Button size="sm" disabled={busy} onClick={() => act(() => staffDb.rpc('staff_ack_call', { p_call: c.id }))}>
                 On my way
               </Button>
@@ -351,9 +361,9 @@ export default function Floor() {
 
 function Panel({ title, count, empty, children }: { title: string; count: number; empty: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white">
-      <div className="flex items-center justify-between border-b border-stone-200 px-3 py-2">
-        <h2 className="font-bold">{title}</h2>
+    <div className="rounded-2xl border border-stone-200/80 bg-paper shadow-card">
+      <div className="flex items-center justify-between border-b border-stone-200 px-3 py-2.5">
+        <h2 className="font-sans text-sm font-bold uppercase tracking-wide text-stone-700">{title}</h2>
         <Badge tone={count ? 'red' : 'stone'}>{count}</Badge>
       </div>
       <div className="space-y-2 p-2">{count === 0 ? <p className="p-2 text-sm text-stone-400">{empty}</p> : children}</div>
@@ -361,11 +371,14 @@ function Panel({ title, count, empty, children }: { title: string; count: number
   )
 }
 
-function Row({ title, sub, tone, children }: { title: string; sub: string; tone: 'red' | 'blue' | 'amber'; children: React.ReactNode }) {
+function Row({ title, sub, tone, icon, children }: { title: string; sub: string; tone: 'red' | 'blue' | 'amber'; icon?: IconName; children: React.ReactNode }) {
   const tones = { red: 'border-red-300 bg-red-50', blue: 'border-sky-300 bg-sky-50', amber: 'border-orange-300 bg-orange-50' }
   return (
     <div className={`rounded-xl border p-2.5 ${tones[tone]}`}>
-      <p className="text-sm font-semibold">{title}</p>
+      <p className="flex items-center gap-1.5 text-sm font-bold">
+        {icon && <Icon name={icon} className="h-4 w-4" />}
+        {title}
+      </p>
       <p className="text-xs text-stone-600">{sub}</p>
       <div className="mt-2 flex justify-end gap-2">{children}</div>
     </div>

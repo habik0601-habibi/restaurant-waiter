@@ -83,7 +83,7 @@ export default function Kitchen() {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-bold">Kitchen</h1>
+        <h1 className="text-2xl font-bold">Kitchen</h1>
         <p className="text-sm text-stone-500">
           {working.filter((i) => i.status === 'cooking').length} cooking · {working.filter((i) => i.status === 'queued').length} queued · {ready.length} ready
         </p>
@@ -99,9 +99,9 @@ export default function Kitchen() {
             .sort((a, b) => (a.planned_start_at ?? '9').localeCompare(b.planned_start_at ?? '9') || a.created_at.localeCompare(b.created_at))
           const full = cooking.length >= st.capacity
           return (
-            <section key={st.id} className="rounded-2xl border border-stone-200 bg-white">
-              <header className="flex items-center justify-between border-b border-stone-200 px-3 py-2">
-                <h2 className="font-bold">{st.name}</h2>
+            <section key={st.id} className="rounded-2xl border border-stone-200/80 bg-paper shadow-card">
+              <header className="flex items-center justify-between border-b border-stone-200 px-3 py-2.5">
+                <h2 className="font-sans text-sm font-bold uppercase tracking-wide text-stone-700">{st.name}</h2>
                 <Badge tone={cooking.length > st.capacity ? 'red' : full ? 'amber' : 'green'}>
                   {cooking.length} / {st.capacity} in use
                 </Badge>
@@ -138,10 +138,10 @@ export default function Kitchen() {
                   const startIn = ms === null ? null : ms <= 20000 ? Math.min(0, Math.ceil(ms / 60000)) : Math.ceil(ms / 60000)
                   const due = startIn !== null && startIn <= 0
                   return (
-                    <article key={i.id} className={`rounded-xl border p-2.5 ${due ? 'border-brand-500 bg-brand-50' : 'border-stone-200 bg-stone-50'}`}>
+                    <article key={i.id} className={`rounded-xl border p-2.5 ${due ? 'border-emerald-500 bg-emerald-50' : 'border-stone-200 bg-stone-50'}`}>
                       <ItemHead item={i} table={tableOf(i)} now={now} />
                       <div className="mt-2 flex items-center justify-between gap-2">
-                        <span className={`text-sm font-semibold ${due ? 'text-brand-700' : 'text-stone-500'}`}>
+                        <span className={`text-sm font-semibold ${due ? 'text-emerald-800' : 'text-stone-600'}`}>
                           {startIn === null ? 'Planning…' : due ? (startIn < 0 ? `START NOW · ${-startIn} min overdue` : 'START NOW') : `Start in ${startIn} min`}
                         </span>
                         <Button size="sm" variant={due ? 'primary' : 'secondary'} disabled={busy === i.id} onClick={() => setStatus(i, 'cooking')}>
@@ -156,9 +156,9 @@ export default function Kitchen() {
           )
         })}
 
-        <section className="rounded-2xl border border-stone-200 bg-white md:col-span-2 xl:col-span-1">
-          <header className="flex items-center justify-between border-b border-stone-200 px-3 py-2">
-            <h2 className="font-bold">Pass · ready to serve</h2>
+        <section className="rounded-2xl border border-stone-200/80 bg-paper shadow-card md:col-span-2 xl:col-span-1">
+          <header className="flex items-center justify-between border-b border-stone-200 px-3 py-2.5">
+            <h2 className="font-sans text-sm font-bold uppercase tracking-wide text-stone-700">Pass · ready to serve</h2>
             <Badge tone="blue">{ready.length}</Badge>
           </header>
           <div className="space-y-2 p-2">

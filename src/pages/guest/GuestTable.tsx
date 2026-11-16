@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Button, Notice, Spinner } from '../../components/ui'
+import { EmberBackdrop } from '../../components/EmberBackdrop'
+import { Icon } from '../../components/Icon'
+import { Button, Hero, Notice, Spinner, Stepper } from '../../components/ui'
 import { useLive } from '../../hooks/useLive'
 import { friendly } from '../../lib/format'
 import { ensureGuest, guestDb } from '../../lib/supabase'
@@ -119,15 +121,16 @@ export default function GuestTable() {
       {expired && <Notice tone="amber">This table&apos;s session has expired. Please ask a member of staff to reopen it.</Notice>}
 
       {pending && (
-        <div className="rounded-2xl bg-white p-5 text-center shadow-sm">
-          <span className="mx-auto mb-3 block h-10 w-10 animate-spin rounded-full border-4 border-brand-100 border-t-brand-600" />
-          <h2 className="text-lg font-bold">Waiting for approval</h2>
+        <div className="rounded-2xl border border-stone-200/80 bg-paper p-6 text-center shadow-card">
+          <span className="mx-auto mb-4 block h-11 w-11 animate-spin rounded-full border-4 border-brand-100 border-t-brand-600" />
+          <h2 className="text-2xl font-bold">Waiting for approval</h2>
           <p className="mt-1 text-sm text-stone-600">
             {tableOpen
               ? 'Someone at the table, or a member of staff, needs to let you in.'
               : 'A member of staff will confirm your table in a moment. Give them a wave.'}
           </p>
-          <p className="mt-3 text-xs text-stone-500">
+          <p className="mt-4 flex items-start gap-2 rounded-xl bg-stone-100 px-3 py-2 text-left text-xs text-stone-600">
+            <Icon name="scan" className="mt-0.5 h-4 w-4" />
             Scanning the code is not enough to order. This keeps your table safe from prank orders.
           </p>
         </div>
@@ -136,8 +139,8 @@ export default function GuestTable() {
       {denied && <Notice tone="amber">Your request was declined. Please speak to a member of staff.</Notice>}
 
       {!pending && !denied && !expired && (
-        <div className="rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-bold">{tableOpen ? 'Join this table' : 'Welcome'}</h2>
+        <div className="rounded-2xl border border-stone-200/80 bg-paper p-5 shadow-card">
+          <h2 className="text-2xl font-bold">{tableOpen ? 'Join this table' : 'Welcome'}</h2>
           <p className="mt-1 text-sm text-stone-600">
             {tableOpen
               ? 'This table is already ordering. Ask to join and someone at the table will let you in.'
@@ -150,29 +153,13 @@ export default function GuestTable() {
               onChange={(e) => setName(e.target.value)}
               maxLength={30}
               placeholder="e.g. Ayesha"
-              className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-3 text-base"
+              className="mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3 text-base"
             />
           </label>
           {!tableOpen && (
             <div className="mt-4 flex items-center justify-between">
               <span className="text-sm font-medium">Guests at the table</span>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setParty((p) => Math.max(1, p - 1))}
-                  className="h-11 w-11 rounded-full border border-stone-300 text-xl"
-                  aria-label="Fewer guests"
-                >
-                  −
-                </button>
-                <span className="w-6 text-center text-lg font-bold">{party}</span>
-                <button
-                  onClick={() => setParty((p) => Math.min(view.capacity + 2, p + 1))}
-                  className="h-11 w-11 rounded-full border border-stone-300 text-xl"
-                  aria-label="More guests"
-                >
-                  +
-                </button>
-              </div>
+              <Stepper value={party} onChange={setParty} min={1} max={view.capacity + 2} label="guests" />
             </div>
           )}
           {actionError && <div className="mt-3"><Notice>{actionError}</Notice></div>}
@@ -182,7 +169,7 @@ export default function GuestTable() {
         </div>
       )}
 
-      <h3 className="mb-2 mt-6 text-sm font-semibold uppercase tracking-wide text-stone-500">Have a look at the menu</h3>
+      <h3 className="mb-1 mt-7 text-[11px] font-bold uppercase tracking-[0.22em] text-stone-500">While you wait: the menu</h3>
       <MenuBrowser menu={menu} />
     </Shell>
   )
@@ -191,11 +178,8 @@ export default function GuestTable() {
 function Shell({ title, subtitle, children }: { title?: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div className="mx-auto min-h-full max-w-md bg-cream">
-      <header className="bg-brand-900 px-5 pb-6 pt-8 text-white">
-        <p className="text-xs uppercase tracking-widest text-saffron-400">{subtitle ?? 'Table ordering'}</p>
-        <h1 className="text-2xl font-bold">{title ?? 'Zaiqa Karahi House'}</h1>
-      </header>
-      <div className="-mt-3 rounded-t-3xl bg-cream p-4">{children}</div>
+      <Hero eyebrow={subtitle ?? 'Table ordering'} title={title ?? 'Zaiqa Karahi House'} backdrop={<EmberBackdrop />} />
+      <div className="relative -mt-4 rounded-t-3xl bg-cream p-4">{children}</div>
     </div>
   )
 }
